@@ -162,7 +162,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Content == ".song" || m.Content == ".songname" {
 		sendMessage(s, m.ChannelID, "Darude - Sandstorm")
 	}
-	
+
 	if m.Content == ".heehoo" {
 		sendMessage(s, m.ChannelID, "HEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
 		sendMessage(s, m.ChannelID, "HOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
