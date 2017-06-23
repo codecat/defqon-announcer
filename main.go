@@ -188,6 +188,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		sendMessage(s, m.ChannelID, fmt.Sprintf("The local time is: **%d:%02d**", t.Hour(), t.Minute()))
 	}
 
+	if m.Content == "RISE" {
+		sendMessage(s, m.ChannelID, "RISE")
+	}
+
 	parse := strings.SplitN(m.Content, " ", 2)
 	if parse[0] == ".find" && len(parse) == 2 {
 		query := strings.Trim(strings.ToLower(parse[1]), " ")
