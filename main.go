@@ -167,17 +167,31 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		currentDayMins := nowSeconds()
 
+		found := false
 		for _, item := range schedule.Items {
 			if !strings.Contains(strings.ToLower(item.Name), query) {
 				continue
 			}
 
+			found = true
+
+			day := "??"
+			switch item.Time.Day {
+				case 23: day = "Friday"
+				case 24: day = "Saturday"
+				case 25: day = "Sunday"
+			}
+
 			if currentDayMins < item.TimeSeconds() {
-				sendMessage(s, m.ChannelID, fmt.Sprintf("%s is on **the %dth**, at **%d:%02d** CEST!", formatAnnounceArtist(&item), item.Time.Day, item.Time.Hour, item.Time.Minute))
+				sendMessage(s, m.ChannelID, fmt.Sprintf("%s is on **%s**, at **%d:%02d** CEST!", formatAnnounceArtist(&item), day, item.Time.Hour, item.Time.Minute))
 				break
 			} else {
-				sendMessage(s, m.ChannelID, fmt.Sprintf("%s has already played on the %dth, at %d:%02d CEST.", formatAnnounceArtist(&item), item.Time.Day, item.Time.Hour, item.Time.Minute))
+				sendMessage(s, m.ChannelID, fmt.Sprintf("%s has already played on %s, at %d:%02d CEST.", formatAnnounceArtist(&item), day, item.Time.Hour, item.Time.Minute))
 			}
+		}
+
+		if !found {
+			sendMessage(s, m.ChannelID, "I found nothing :frowning:")
 		}
 	}
 
