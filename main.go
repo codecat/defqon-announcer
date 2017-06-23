@@ -94,9 +94,11 @@ func main() {
 
 	checkForNewScheduleItem()
 
+	/*
 	if config.Discord.Voice.Guild != "" && config.Discord.Voice.Channel != "" {
 		go botStream(discord)
 	}
+	*/
 
 	go botTick(discord)
 
