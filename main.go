@@ -5,9 +5,16 @@ import "os/signal"
 import "syscall"
 import "time"
 import "fmt"
+import "net"
+import "bufio"
+import "strings"
+import "reflect"
+import "unsafe"
 
 import "github.com/codecat/go-libs/log"
 import "github.com/bwmarrin/discordgo"
+import "github.com/hajimehoshi/go-mp3"
+import "gopkg.in/hraban/opus.v2"
 
 var keepRunning = true
 
@@ -60,7 +67,7 @@ func main() {
 		return
 	}
 
-	discord, err := discordgo.New("Bot " + config.DiscordToken)
+	discord, err := discordgo.New("Bot " + config.Discord.Token)
 	if err != nil {
 		log.Fatal("Couldn't create Discord API: %s", err.Error())
 		return
@@ -81,6 +88,10 @@ func main() {
 
 	checkForNewScheduleItem()
 
+	if config.Discord.Voice.Guild != "" && config.Discord.Voice.Channel != "" {
+		go botStream(discord)
+	}
+
 	go botTick(discord)
 
 	sc := make(chan os.Signal, 1)
@@ -90,6 +101,15 @@ func main() {
 	keepRunning = false
 
 	discord.Close()
+}
+
+func isAdmin(u *discordgo.User) bool {
+	for _, a := range config.Discord.Admins {
+		if u.ID == a {
+			return true
+		}
+	}
+	return false
 }
 
 func sendMessage(s *discordgo.Session, channelID string, msg string) {
@@ -126,6 +146,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Content == ".schedule" || m.Content == ".timetable" {
 		sendMessage(s, m.ChannelID, "Defqon 1 Timetable: <http://imgur.com/a/8p4dH>")
 	}
+
+	if isAdmin(m.Author) {
+		if m.Content == ".restartStream" {
+			go botStream(s)
+		}
+	}
 }
 
 func formatAnnounceArtist(item *ScheduleItem) string {
@@ -159,7 +185,7 @@ func botTick(s *discordgo.Session) {
 		if checkForNewScheduleItem() {
 			item := getCurrentScheduleItem()
 			if item != nil {
-				sendMessage(s, config.DiscordAnnounceChannel, formatAnnounceNow(item))
+				sendMessage(s, config.Discord.Announce.Channel, formatAnnounceNow(item))
 			}
 		}
 
@@ -170,7 +196,7 @@ func botTick(s *discordgo.Session) {
 			nextItemDayMins := (nextItem.Time.Day * 1440) + (nextItem.Time.Hour * 60) + nextItem.Time.Minute
 			currentDayMins := (t.Day() * 1440) + (t.Hour() * 60) + t.Minute()
 			if currentDayMins == nextItemDayMins - 5 {
-				sendMessage(s, config.DiscordAnnounceChannel, formatAnnounceSoon(nextItem))
+				sendMessage(s, config.Discord.Announce.Channel, formatAnnounceSoon(nextItem))
 				setNextItemPreAnnounced()
 				log.Info("New next item: %s", nextItem.Name)
 			}
@@ -180,4 +206,101 @@ func botTick(s *discordgo.Session) {
 	}
 
 	log.Info("Shutting down..")
+}
+
+func botStream(s *discordgo.Session) {
+	log.Info("Joining voice channel")
+	voice, err := s.ChannelVoiceJoin(config.Discord.Voice.Guild, config.Discord.Voice.Channel, false, false)
+	if err != nil {
+		log.Error("Failed to join voice channel: %s", err.Error())
+		return
+	}
+	defer voice.Disconnect()
+
+	if voice.Speaking(true) != nil {
+		log.Error("Failed to start speaking: %s", err.Error())
+		return
+	}
+	defer voice.Speaking(false)
+
+	log.Info("Opening Q-Dance stream")
+	conn, err := net.Dial("tcp", "audio.true.nl:80")
+	if err != nil {
+		log.Error("Failed to connect to audio server")
+		return
+	}
+	defer conn.Close()
+
+	fmt.Fprintf(conn, "GET /qdance-hard HTTP/1.1\n")
+	fmt.Fprintf(conn, "Host: audio.true.nl\n")
+	fmt.Fprintf(conn, "User-Agent: Reddit /r/hardstyle Bot\n")
+	fmt.Fprintf(conn, "Accept: */*\n")
+	fmt.Fprintf(conn, "\n")
+
+	reader := bufio.NewReader(conn)
+	for {
+		line, err := reader.ReadString('\n')
+		if err != nil {
+			log.Error("Failed reading header string")
+			return
+		}
+		line = strings.Trim(line, "\r\n")
+		if line == "" {
+			break
+		}
+		log.Debug("Header: \"%s\"", line)
+	}
+
+	d, err := mp3.Decode(conn)
+	if err != nil {
+		log.Error("Decode error: %s", err.Error())
+		return
+	}
+
+	var opusSampleRate = 48000
+	const opusChannels = 2
+	const opusFrameTime = 20 // 60, 40, 20, 10, 5, 2.5
+
+	enc, err := opus.NewEncoder(opusSampleRate, opusChannels, opus.AppAudio)
+	if err != nil {
+		log.Error("Failed to create Opus encoder: %s", err.Error())
+		return
+	}
+
+	opusBuffer := make([]byte, 1000)
+	for {
+		time.Sleep(opusFrameTime * time.Millisecond)
+
+		// 60ms opus frame slice length = (44100.0 / 1000.0 * 60) * 2
+		// plus another * 2 because we need int16 count
+		pcm := make([]byte, int(float32(opusSampleRate) / 1000.0 * float32(opusFrameTime) * float32(opusChannels)) * 2)
+		if float32(len(pcm) / 2 / opusChannels * 1000 / opusSampleRate) != opusFrameTime {
+			log.Error("Invalid frame size: %d", len(pcm))
+			return
+		}
+
+		for decRead := 0; decRead < len(pcm); {
+			n, err := d.Read(pcm[decRead:])
+			if err != nil {
+				log.Error("Error decoding MP3 data: %s", err.Error())
+				return
+			}
+			decRead += n
+		}
+
+		pcmHeader := *(*reflect.SliceHeader)(unsafe.Pointer(&pcm))
+		pcmHeader.Len /= 2
+		pcmHeader.Cap /= 2
+		pcmInt16 := *(*[]int16)(unsafe.Pointer(&pcmHeader))
+
+		n, err := enc.Encode(pcmInt16, opusBuffer)
+		if err != nil {
+			log.Error("Error encoding Opus data: %s", err.Error())
+			return
+		}
+
+		voice.OpusSend <- opusBuffer[:n]
+	}
+
+	//voice.OpusSend
 }

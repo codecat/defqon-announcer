@@ -6,8 +6,20 @@ import "github.com/codecat/go-libs/log"
 import "gopkg.in/yaml.v2"
 
 var config struct {
-	DiscordToken string
-	DiscordAnnounceChannel string
+	Discord struct {
+		Token string
+		Admins []string
+
+		Announce struct {
+			Channel string
+		}
+
+		Voice struct {
+			Guild string
+			Channel string
+			Source string
+		}
+	}
 	ScheduleFile string
 }
 
