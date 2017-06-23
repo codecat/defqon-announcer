@@ -118,6 +118,14 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			sendMessage(s, m.ChannelID, fmt.Sprintf("Next up (at %d:%02d CEST): %s", item.Time.Hour, item.Time.Minute, formatAnnounceArtist(item)))
 		}
 	}
+
+	if m.Content == ".radio" {
+		sendMessage(s, m.ChannelID, "Tune in to the Defqon stream: <http://radio.q-dance.com/>")
+	}
+
+	if m.Content == ".schedule" || m.Content == ".timetable" {
+		sendMessage(s, m.ChannelID, "Defqon 1 Timetable: <http://imgur.com/a/8p4dH>")
+	}
 }
 
 func formatAnnounceArtist(item *ScheduleItem) string {
