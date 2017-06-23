@@ -45,13 +45,14 @@ func setNextItemPreAnnounced() {
 }
 
 func checkForNewScheduleItem() bool {
-	t := time.Now()
+	t := nowSeconds() * 60 + time.Now().Second()
 
 	ret := false
 
 	for i := lastItem + 1; i < len(schedule.Items); i++ {
 		item := schedule.Items[i]
-		if t.Day() >= item.Time.Day && t.Hour() >= item.Time.Hour && t.Minute() >= item.Time.Minute {
+		// Q-Dance crew is 40 seconds late on average.
+		if t >= item.TimeSeconds() * 60 + 40 {
 			lastItem = i
 			ret = true
 			log.Info("New item: %s", item.Name)
