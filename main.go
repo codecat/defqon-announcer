@@ -61,6 +61,11 @@ func checkForNewScheduleItem() bool {
 	return ret
 }
 
+func nowSeconds() int {
+	t := time.Now()
+	return (t.Day() * 1440) + (t.Hour() * 60) + t.Minute()
+}
+
 func main() {
 	log.Open(log.CatDebug, log.CatFatal)
 
@@ -148,6 +153,34 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		sendMessage(s, m.ChannelID, "Defqon 1 Timetable: <http://imgur.com/a/8p4dH>")
 	}
 
+	if m.Content == ".github" {
+		sendMessage(s, m.ChannelID, "This bot is open source: <https://github.com/codecat/defqon-announcer>")
+	}
+
+	parse := strings.SplitN(m.Content, " ", 2)
+	if parse[0] == ".find" && len(parse) == 2 {
+		query := strings.Trim(strings.ToLower(parse[1]), " ")
+
+		if len(query) < 3 {
+			return
+		}
+
+		currentDayMins := nowSeconds()
+
+		for _, item := range schedule.Items {
+			if !strings.Contains(strings.ToLower(item.Name), query) {
+				continue
+			}
+
+			if currentDayMins < item.TimeSeconds() {
+				sendMessage(s, m.ChannelID, fmt.Sprintf("%s is on **the %dth**, at **%d:%02d** CEST!", formatAnnounceArtist(&item), item.Time.Day, item.Time.Hour, item.Time.Minute))
+				break
+			} else {
+				sendMessage(s, m.ChannelID, fmt.Sprintf("%s has already played on the %dth, at %d:%02d CEST.", formatAnnounceArtist(&item), item.Time.Day, item.Time.Hour, item.Time.Minute))
+			}
+		}
+	}
+
 	if isAdmin(m.Author) {
 		if m.Content == ".restartStream" {
 			go botStream(s)
@@ -190,12 +223,10 @@ func botTick(s *discordgo.Session) {
 			}
 		}
 
-		t := time.Now()
-
 		nextItem := getNextScheduleItem()
 		if nextItem != nil && !isNextItemPreAnnounced() {
-			nextItemDayMins := (nextItem.Time.Day * 1440) + (nextItem.Time.Hour * 60) + nextItem.Time.Minute
-			currentDayMins := (t.Day() * 1440) + (t.Hour() * 60) + t.Minute()
+			nextItemDayMins := nextItem.TimeSeconds()
+			currentDayMins := nowSeconds()
 			if currentDayMins == nextItemDayMins - 5 {
 				sendMessage(s, config.Discord.Announce.Channel, formatAnnounceSoon(nextItem))
 				setNextItemPreAnnounced()

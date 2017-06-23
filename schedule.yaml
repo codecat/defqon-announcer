@@ -296,6 +296,13 @@ items:
 - time:
     day: 25
     hour: 12
+    minute: 24
+  name: Defqon.1 Legends on Facebook
+  color: none
+  live: true
+- time:
+    day: 25
+    hour: 12
     minute: 30
   name: Delete
   color: blue

@@ -45,3 +45,7 @@ func loadSchedule() bool {
 	log.Info("Schedule loaded")
 	return true
 }
+
+func (self *ScheduleItem) TimeSeconds() int {
+	return (self.Time.Day * 1440) + (self.Time.Hour * 60) + self.Time.Minute
+}
