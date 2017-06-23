@@ -15,6 +15,7 @@ import "github.com/codecat/go-libs/log"
 import "github.com/bwmarrin/discordgo"
 import "github.com/hajimehoshi/go-mp3"
 import "gopkg.in/hraban/opus.v2"
+//import "github.com/hajimehoshi/oto"
 
 var keepRunning = true
 
@@ -257,6 +258,15 @@ func botStream(s *discordgo.Session) {
 		return
 	}
 
+	/*
+	soundPlayer, err := oto.NewPlayer(d.SampleRate(), 2, 2, 65536)
+	if err != nil {
+		fmt.Printf("Player error: %s\n", err.Error())
+		return
+	}
+	defer soundPlayer.Close()
+	*/
+
 	var opusSampleRate = 48000
 	const opusChannels = 2
 	const opusFrameTime = 20 // 60, 40, 20, 10, 5, 2.5
@@ -288,6 +298,8 @@ func botStream(s *discordgo.Session) {
 			decRead += n
 		}
 
+		//soundPlayer.Write(pcm)
+
 		pcmHeader := *(*reflect.SliceHeader)(unsafe.Pointer(&pcm))
 		pcmHeader.Len /= 2
 		pcmHeader.Cap /= 2
@@ -301,6 +313,4 @@ func botStream(s *discordgo.Session) {
 
 		voice.OpusSend <- opusBuffer[:n]
 	}
-
-	//voice.OpusSend
 }
