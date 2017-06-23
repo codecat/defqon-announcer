@@ -73,6 +73,15 @@ items:
   color: black
   live: true
 
+# Downtime
+- time:
+    day: 24
+    hour: 1
+    minute: 0
+  name: Nothing
+  color: none
+  live: true
+
 # Saturday
 - time:
     day: 24
@@ -276,6 +285,15 @@ items:
     minute: 30
   name: Alpha²
   color: blue
+  live: true
+
+# Downtime
+- time:
+    day: 25
+    hour: 3
+    minute: 30
+  name: Nothing
+  color: none
   live: true
 
 # Sunday
