@@ -184,7 +184,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 			if currentDayMins < item.TimeSeconds() {
 				sendMessage(s, m.ChannelID, fmt.Sprintf("%s is on **%s**, at **%d:%02d** CEST!", formatAnnounceArtist(&item), day, item.Time.Hour, item.Time.Minute))
-				break
 			} else {
 				sendMessage(s, m.ChannelID, fmt.Sprintf("%s has already played on %s, at %d:%02d CEST.", formatAnnounceArtist(&item), day, item.Time.Hour, item.Time.Minute))
 			}
