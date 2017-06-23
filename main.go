@@ -157,6 +157,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		sendMessage(s, m.ChannelID, "This bot is open source: <https://github.com/codecat/defqon-announcer>")
 	}
 
+	if m.Content == ".song" || m.Content == ".songname" {
+		sendMessage(s, m.ChannelID, "Darude - Sandstorm")
+	}
+
 	parse := strings.SplitN(m.Content, " ", 2)
 	if parse[0] == ".find" && len(parse) == 2 {
 		query := strings.Trim(strings.ToLower(parse[1]), " ")
