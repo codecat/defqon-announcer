@@ -125,6 +125,13 @@ func sendMessage(s *discordgo.Session, channelID string, msg string) {
 	s.ChannelMessageSend(channelID, ":musical_note: " + msg)
 }
 
+func min(x, y int) int {
+	if x < y {
+		return x
+	}
+	return y
+}
+
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID {
 		return
@@ -154,6 +161,13 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if m.Content == ".schedule" || m.Content == ".timetable" {
 		sendMessage(s, m.ChannelID, "Defqon 1 Timetable: <http://imgur.com/a/8p4dH>")
+
+		nextMessage := "Next 5 sets:\n"
+		for i := lastItem + 1; i < min(lastItem + 6, len(schedule.Items)); i++ {
+			item := schedule.Items[i]
+			nextMessage += fmt.Sprintf("- **%d:%02d** CEST: %s\n", item.Time.Hour, item.Time.Minute, formatAnnounceArtist(&item))
+		}
+		sendMessage(s, m.ChannelID, strings.Trim(nextMessage, "\n"))
 	}
 
 	if m.Content == ".github" {
