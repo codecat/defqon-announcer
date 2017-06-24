@@ -314,13 +314,6 @@ items:
 - time:
     day: 25
     hour: 12
-    minute: 24
-  name: Defqon.1 Legends on Facebook
-  color: none
-  live: true
-- time:
-    day: 25
-    hour: 12
     minute: 30
   name: Delete
   color: blue
@@ -444,6 +437,13 @@ items:
   name: Wasted Penguinz
   color: uv
   live: false
+- time:
+    day: 25
+    hour: 21
+    minute: 24
+  name: Defqon.1 Legends on Facebook
+  color: red
+  live: true
 - time:
     day: 25
     hour: 21
