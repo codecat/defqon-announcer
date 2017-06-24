@@ -1,3 +1,11 @@
-discordtoken: ""
-discordannouncechannel: ""
+discord:
+  token: ""
+  admins:
+  - "123456"
+  announce:
+    channel: "123456"
+  voice:
+    guild: "123456"
+    channel: "123456"
+    source: "http://audio.true.nl/qdance-hard"
 schedulefile: "schedule.yaml"
