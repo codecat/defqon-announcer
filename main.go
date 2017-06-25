@@ -178,18 +178,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		sendMessage(s, m.ChannelID, "Darude - Sandstorm")
 	}
 
-	if m.Content == ".heehoo" {
-		sendMessage(s, m.ChannelID, "HEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
-		sendMessage(s, m.ChannelID, "HOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
-	}
-
 	if m.Content == ".time" {
 		t := time.Now()
 		sendMessage(s, m.ChannelID, fmt.Sprintf("The local time is: **%d:%02d**", t.Hour(), t.Minute()))
-	}
-
-	if m.Content == "RISE" {
-		sendMessage(s, m.ChannelID, "RISE")
 	}
 
 	parse := strings.SplitN(m.Content, " ", 2)
