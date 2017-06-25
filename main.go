@@ -22,6 +22,35 @@ var keepRunning = true
 var lastItem int = -1
 var lastItemPreAnnounced int = -1
 
+type NotifyItem struct {
+	Name string
+	Day int
+	Hour int
+	UserID string
+}
+var notifySets []NotifyItem
+
+func getNotifyUsers(scheduleItem *ScheduleItem) []*NotifyItem {
+	ret := []*NotifyItem{}
+	for i := range notifySets {
+		item := &notifySets[i]
+		if item.Name == scheduleItem.Name && item.Day == scheduleItem.Time.Day && item.Hour == scheduleItem.Time.Hour {
+			ret = append(ret, item)
+		}
+	}
+	return ret
+}
+
+func addNotifyUser(scheduleItem *ScheduleItem, userID string) bool {
+	for _, item := range notifySets {
+		if item.Name == scheduleItem.Name && item.Day == scheduleItem.Time.Day && item.Hour == scheduleItem.Time.Hour && item.UserID == userID {
+			return false
+		}
+	}
+	notifySets = append(notifySets, NotifyItem{ scheduleItem.Name, scheduleItem.Time.Day, scheduleItem.Time.Hour, userID })
+	return true
+}
+
 func getCurrentScheduleItem() *ScheduleItem {
 	if lastItem == -1 {
 		return nil
@@ -223,6 +252,19 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if !found {
 			sendMessage(s, m.ChannelID, "I found nothing :frowning:")
 		}
+	} else if parse[0] == ".notify" && len(parse) == 2 {
+		//TODO: .unnotify
+		found := findItem(parse[1], func(item *ScheduleItem) {
+			if addNotifyUser(item, m.Author.ID) {
+				sendMessage(s, m.ChannelID, fmt.Sprintf("<@%s>, signed up! You will be notified for %s", m.Author.ID, formatAnnounceArtist(item)))
+			} else {
+				sendMessage(s, m.ChannelID, fmt.Sprintf("<@%s>, you already signed up to be notified for %s", m.Author.ID, formatAnnounceArtist(item)))
+			}
+		})
+
+		if !found {
+			sendMessage(s, m.ChannelID, "I found nothing :frowning:")
+		}
 	}
 
 	if isAdmin(m.Author) {
@@ -256,6 +298,20 @@ func formatAnnounceSoon(item *ScheduleItem) string {
 	return fmt.Sprintf(":clock1: Next up in 5 minutes: %s", formatAnnounceArtist(item))
 }
 
+func notifyUsers(s *discordgo.Session, item *ScheduleItem) {
+	notifyMessage := ""
+	notifies := getNotifyUsers(item)
+	for _, notifyItem := range notifies {
+		if notifyItem.Name == item.Name {
+			notifyMessage += fmt.Sprintf("<@%s>, ", notifyItem.UserID)
+		}
+	}
+	notifyMessage = strings.Trim(notifyMessage, ", ")
+	if notifyMessage != "" {
+		sendMessage(s, config.Discord.Announce.Channel, ":warning: " + notifyMessage)
+	}
+}
+
 func botTick(s *discordgo.Session) {
 	for keepRunning {
 		log.Trace("Checking..")
@@ -264,6 +320,7 @@ func botTick(s *discordgo.Session) {
 			item := getCurrentScheduleItem()
 			if item != nil {
 				sendMessage(s, config.Discord.Announce.Channel, formatAnnounceNow(item))
+				notifyUsers(s, item)
 			}
 		}
 
@@ -275,6 +332,7 @@ func botTick(s *discordgo.Session) {
 				sendMessage(s, config.Discord.Announce.Channel, formatAnnounceSoon(nextItem))
 				setNextItemPreAnnounced()
 				log.Info("New next item: %s", nextItem.Name)
+				notifyUsers(s, nextItem)
 			}
 		}
 
