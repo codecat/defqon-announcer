@@ -132,6 +132,26 @@ func min(x, y int) int {
 	return y
 }
 
+type findItemCallback func(*ScheduleItem)
+
+func findItem(query string, cb findItemCallback) bool {
+	query = strings.Trim(strings.ToLower(query), " ")
+
+	if len(query) < 3 {
+		return false
+	}
+
+	found := false
+	for _, item := range schedule.Items {
+		if !strings.Contains(strings.ToLower(item.Name), query) {
+			continue
+		}
+		found = true
+		cb(&item)
+	}
+	return found
+}
+
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID {
 		return
@@ -185,22 +205,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	parse := strings.SplitN(m.Content, " ", 2)
 	if parse[0] == ".find" && len(parse) == 2 {
-		query := strings.Trim(strings.ToLower(parse[1]), " ")
-
-		if len(query) < 3 {
-			return
-		}
-
-		currentDayMins := nowSeconds()
-
-		found := false
-		for _, item := range schedule.Items {
-			if !strings.Contains(strings.ToLower(item.Name), query) {
-				continue
-			}
-
-			found = true
-
+		found := findItem(parse[1], func(item *ScheduleItem) {
 			day := "??"
 			switch item.Time.Day {
 				case 23: day = "Friday"
@@ -208,12 +213,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				case 25: day = "Sunday"
 			}
 
-			if currentDayMins < item.TimeSeconds() {
-				sendMessage(s, m.ChannelID, fmt.Sprintf("%s is on **%s**, at **%d:%02d** CEST!", formatAnnounceArtist(&item), day, item.Time.Hour, item.Time.Minute))
+			if nowSeconds() < item.TimeSeconds() {
+				sendMessage(s, m.ChannelID, fmt.Sprintf("%s is on **%s**, at **%d:%02d** CEST!", formatAnnounceArtist(item), day, item.Time.Hour, item.Time.Minute))
 			} else {
-				sendMessage(s, m.ChannelID, fmt.Sprintf("%s has already played on %s, at %d:%02d CEST.", formatAnnounceArtist(&item), day, item.Time.Hour, item.Time.Minute))
+				sendMessage(s, m.ChannelID, fmt.Sprintf("%s has already played on %s, at %d:%02d CEST.", formatAnnounceArtist(item), day, item.Time.Hour, item.Time.Minute))
 			}
-		}
+		})
 
 		if !found {
 			sendMessage(s, m.ChannelID, "I found nothing :frowning:")
