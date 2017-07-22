@@ -205,12 +205,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if m.Content == ".radio" {
-		sendMessage(s, m.ChannelID, "Tune in to the Defqon stream: <http://radio.q-dance.com/>")
+		sendMessage(s, m.ChannelID, "Tune in to the Tomorrowland stream: <https://live.tomorrowland.com/>")
 	}
 
 	if m.Content == ".schedule" || m.Content == ".timetable" {
-		sendMessage(s, m.ChannelID, "Defqon 1 Timetable: <http://imgur.com/a/8p4dH>")
-
 		nextMessage := "Next 5 sets:\n"
 		for i := lastItem + 1; i < min(lastItem + 6, len(schedule.Items)); i++ {
 			item := schedule.Items[i]
@@ -232,6 +230,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		sendMessage(s, m.ChannelID, fmt.Sprintf("The local time is: **%d:%02d**", t.Hour(), t.Minute()))
 	}
 
+	/*
 	parse := strings.SplitN(m.Content, " ", 2)
 	if parse[0] == ".find" && len(parse) == 2 {
 		found := findItem(parse[1], func(item *ScheduleItem) {
@@ -266,6 +265,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			sendMessage(s, m.ChannelID, "I found nothing :frowning:")
 		}
 	}
+	*/
 
 	if isAdmin(m.Author) {
 		if m.Content == ".restartStream" {
