@@ -230,21 +230,13 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		sendMessage(s, m.ChannelID, fmt.Sprintf("The local time is: **%d:%02d**", t.Hour(), t.Minute()))
 	}
 
-	/*
 	parse := strings.SplitN(m.Content, " ", 2)
 	if parse[0] == ".find" && len(parse) == 2 {
 		found := findItem(parse[1], func(item *ScheduleItem) {
-			day := "??"
-			switch item.Time.Day {
-				case 23: day = "Friday"
-				case 24: day = "Saturday"
-				case 25: day = "Sunday"
-			}
-
 			if nowSeconds() < item.TimeSeconds() {
-				sendMessage(s, m.ChannelID, fmt.Sprintf("%s is on **%s**, at **%d:%02d** CEST!", formatAnnounceArtist(item), day, item.Time.Hour, item.Time.Minute))
+				sendMessage(s, m.ChannelID, fmt.Sprintf("%s is at **%d:%02d** CEST!", formatAnnounceArtist(item), item.Time.Hour, item.Time.Minute))
 			} else {
-				sendMessage(s, m.ChannelID, fmt.Sprintf("%s has already played on %s, at %d:%02d CEST.", formatAnnounceArtist(item), day, item.Time.Hour, item.Time.Minute))
+				sendMessage(s, m.ChannelID, fmt.Sprintf("%s has already played at %d:%02d CEST.", formatAnnounceArtist(item), item.Time.Hour, item.Time.Minute))
 			}
 		})
 
@@ -265,7 +257,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			sendMessage(s, m.ChannelID, "I found nothing :frowning:")
 		}
 	}
-	*/
 
 	if isAdmin(m.Author) {
 		if m.Content == ".restartStream" {
