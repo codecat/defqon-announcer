@@ -205,7 +205,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if m.Content == ".radio" {
-		sendMessage(s, m.ChannelID, "Tune in to the Tomorrowland stream: <https://live.tomorrowland.com/channel/the-arch>")
+		sendMessage(s, m.ChannelID, "Tune in to the Q-BASE stream: <http://radio.q-dance.com/>")
 	}
 
 	if m.Content == ".schedule" || m.Content == ".timetable" {

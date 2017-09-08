@@ -1,51 +1,178 @@
 items:
-# Friday
+# Saturday
 - time:
-    day: 22
+    day: 9
     hour: 17
     minute: 0
-  name: NCBM
+  name: Dr Rude
   color: none
   live: true
 - time:
-    day: 22
+    day: 9
     hour: 18
     minute: 0
-  name: Psyko Punkz
+  name: The Melodyst
   color: none
   live: true
 - time:
-    day: 22
+    day: 9
+    hour: 18
+    minute: 30
+  name: Prefix & Density
+  color: none
+  live: true
+- time:
+    day: 9
     hour: 19
     minute: 0
-  name: Charly Lownoise & Mental Theo
+  name: Audiotricz
   color: none
   live: true
 - time:
-    day: 22
+    day: 9
     hour: 20
     minute: 0
-  name: Coone
+  name: Decipher
   color: none
   live: true
 - time:
-    day: 22
+    day: 9
+    hour: 20
+    minute: 30
+  name: Sub Zero Project
+  color: none
+  live: true
+- time:
+    day: 9
     hour: 21
     minute: 0
-  name: Brennan Heart
+  name: Bass Modulators
   color: none
   live: true
 - time:
-    day: 22
+    day: 9
+    hour: 21
+    minute: 30
+  name: Korsakoff
+  color: none
+  live: true
+- time:
+    day: 9
     hour: 22
     minute: 0
-  name: Zatox
+  name: Brennan Heart & Wildstylez
   color: none
   live: true
 - time:
-    day: 22
+    day: 9
+    hour: 22
+    minute: 30
+  name: Mad Dog & Unexist
+  color: none
+  live: true
+- time:
+    day: 9
     hour: 23
     minute: 0
-  name: Evil Activities
+  name: Da Tweekaz
+  color: none
+  live: true
+- time:
+    day: 9
+    hour: 23
+    minute: 30
+  name: Tha Playah
+  color: none
+  live: true
+# Sunday
+- time:
+    day: 10
+    hour: 0
+    minute: 0
+  name: Noisecontrollers
+  color: none
+  live: true
+- time:
+    day: 10
+    hour: 0
+    minute: 30
+  name: Adaro
+  color: none
+  live: true
+- time:
+    day: 10
+    hour: 1
+    minute: 0
+  name: "N-Vitral"
+  color: none
+  live: true
+- time:
+    day: 10
+    hour: 1
+    minute: 30
+  name: D-Block & S-te-Fan
+  color: none
+  live: true
+- time:
+    day: 10
+    hour: 2
+    minute: 0
+  name: D-Fence
+  color: none
+  live: true
+- time:
+    day: 10
+    hour: 3
+    minute: 30
+  name: Lady Dammage
+  color: none
+  live: true
+- time:
+    day: 10
+    hour: 4
+    minute: 0
+  name: Frequencerz
+  color: none
+  live: true
+- time:
+    day: 10
+    hour: 4
+    minute: 30
+  name: Destructive Tendencies
+  color: none
+  live: true
+- time:
+    day: 10
+    hour: 5
+    minute: 0
+  name: Phuture Noize
+  color: none
+  live: true
+- time:
+    day: 10
+    hour: 5
+    minute: 30
+  name: Spitnoise LIVE
+  color: none
+  live: true
+- time:
+    day: 10
+    hour: 6
+    minute: 0
+  name: Delete & Regain
+  color: none
+  live: true
+- time:
+    day: 10
+    hour: 6
+    minute: 30
+  name: Miss K8
+  color: none
+  live: true
+- time:
+    day: 10
+    hour: 7
+    minute: 0
+  name: Nothing
   color: none
   live: true
