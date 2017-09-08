@@ -208,6 +208,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		sendMessage(s, m.ChannelID, "Tune in to the Q-BASE stream: <http://radio.q-dance.com/>")
 	}
 
+	if m.Content == ".timetable" {
+		sendMessage(s, m.ChannelID, "Q-BASE timetable: <https://i.imgur.com/aFZhjVI.jpg>")
+	}
+
 	if m.Content == ".schedule" || m.Content == ".timetable" {
 		nextMessage := "Next 5 sets:\n"
 		for i := lastItem + 1; i < min(lastItem + 6, len(schedule.Items)); i++ {
