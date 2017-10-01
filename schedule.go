@@ -8,6 +8,7 @@ import "gopkg.in/yaml.v2"
 type ScheduleItem struct {
 	Time struct {
 		Day int
+		Month int
 		Hour int
 		Minute int
 	}
@@ -47,5 +48,5 @@ func loadSchedule() bool {
 }
 
 func (self *ScheduleItem) TimeSeconds() int {
-	return (self.Time.Day * 1440) + (self.Time.Hour * 60) + self.Time.Minute
+	return (self.Time.Month * 43200) + (self.Time.Day * 1440) + (self.Time.Hour * 60) + self.Time.Minute
 }

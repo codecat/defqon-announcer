@@ -25,6 +25,7 @@ var lastItemPreAnnounced int = -1
 type NotifyItem struct {
 	Name string
 	Day int
+	Month int
 	Hour int
 	UserID string
 }
@@ -34,7 +35,7 @@ func getNotifyUsers(scheduleItem *ScheduleItem) []*NotifyItem {
 	ret := []*NotifyItem{}
 	for i := range notifySets {
 		item := &notifySets[i]
-		if item.Name == scheduleItem.Name && item.Day == scheduleItem.Time.Day && item.Hour == scheduleItem.Time.Hour {
+		if item.Name == scheduleItem.Name && item.Day == scheduleItem.Time.Day && item.Month == scheduleItem.Time.Month && item.Hour == scheduleItem.Time.Hour {
 			ret = append(ret, item)
 		}
 	}
@@ -43,11 +44,11 @@ func getNotifyUsers(scheduleItem *ScheduleItem) []*NotifyItem {
 
 func addNotifyUser(scheduleItem *ScheduleItem, userID string) bool {
 	for _, item := range notifySets {
-		if item.Name == scheduleItem.Name && item.Day == scheduleItem.Time.Day && item.Hour == scheduleItem.Time.Hour && item.UserID == userID {
+		if item.Name == scheduleItem.Name && item.Day == scheduleItem.Time.Day && item.Month == scheduleItem.Time.Month && item.Hour == scheduleItem.Time.Hour && item.UserID == userID {
 			return false
 		}
 	}
-	notifySets = append(notifySets, NotifyItem{ scheduleItem.Name, scheduleItem.Time.Day, scheduleItem.Time.Hour, userID })
+	notifySets = append(notifySets, NotifyItem{ scheduleItem.Name, scheduleItem.Time.Day, scheduleItem.Time.Month, scheduleItem.Time.Hour, userID })
 	return true
 }
 
@@ -93,7 +94,7 @@ func checkForNewScheduleItem() bool {
 
 func nowSeconds() int {
 	t := time.Now()
-	return (t.Day() * 1440) + (t.Hour() * 60) + t.Minute()
+	return (int(t.Month()) * 43200) + (t.Day() * 1440) + (t.Hour() * 60) + t.Minute()
 }
 
 func main() {
@@ -189,7 +190,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Content == ".current" {
 		item := getCurrentScheduleItem()
 		if item == nil {
-			sendMessage(s, m.ChannelID, "There is currently no set playing on stream.")
+			sendMessage(s, m.ChannelID, "There is currently no set playing.")
 		} else {
 			sendMessage(s, m.ChannelID, fmt.Sprintf("Now playing: %s", formatAnnounceArtist(item)))
 		}
@@ -205,11 +206,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if m.Content == ".radio" {
-		sendMessage(s, m.ChannelID, "Tune in to the Q-BASE stream: <http://radio.q-dance.com/>")
-	}
-
-	if m.Content == ".timetable" {
-		sendMessage(s, m.ChannelID, "Q-BASE timetable: <https://i.imgur.com/aFZhjVI.jpg>")
+		sendMessage(s, m.ChannelID, "Sadly, there is no official stream for The Return of Headhunterz.")
 	}
 
 	if m.Content == ".schedule" || m.Content == ".timetable" {
