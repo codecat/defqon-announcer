@@ -218,9 +218,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		sendMessage(s, m.ChannelID, strings.Trim(nextMessage, "\n"))
 	}
 
-	if m.Content == ".github" {
+	/*if m.Content == ".github" {
 		sendMessage(s, m.ChannelID, "This bot is open source: <https://github.com/codecat/defqon-announcer>")
-	}
+	}*/
 
 	if m.Content == ".song" || m.Content == ".songname" {
 		sendMessage(s, m.ChannelID, "Darude - Sandstorm")
