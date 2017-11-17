@@ -1,57 +1,73 @@
 items:
 - time:
-    day: 30
-    month: 9
-    hour: 23
+    day: 17
+    month: 11
+    hour: 22
     minute: 0
-  name: Sound Rush
+  name: 24 hours left until QLIMAX
   color: none
   live: true
 - time:
-    day: 1
-    month: 10
-    hour: 0
+    day: 18
+    month: 11
+    hour: 10
     minute: 0
-  name: Headhunterz
+  name: 12 hours left until QLIMAX
   color: none
   live: true
 - time:
-    day: 1
-    month: 10
-    hour: 2
+    day: 18
+    month: 11
+    hour: 18
     minute: 0
-  name: Wildstylez
+  name: 4 hours left until QLIMAX
   color: none
   live: true
 - time:
-    day: 1
-    month: 10
-    hour: 3
+    day: 18
+    month: 11
+    hour: 20
     minute: 0
-  name: Noisecontrollers
+  name: 2 hours left until QLIMAX
   color: none
   live: true
 - time:
-    day: 1
-    month: 10
-    hour: 4
+    day: 18
+    month: 11
+    hour: 21
     minute: 0
-  name: Psyko Punkz
+  name: Doors open at QLIMAX, 1 hour left
   color: none
   live: true
 - time:
-    day: 1
-    month: 10
-    hour: 5
-    minute: 0
-  name: Frequencerz
+    day: 18
+    month: 11
+    hour: 21
+    minute: 30
+  name: 30 minutes left until QLIMAX
   color: none
   live: true
 - time:
-    day: 1
-    month: 10
-    hour: 6
+    day: 18
+    month: 11
+    hour: 21
+    minute: 45
+  name: 15 minutes left until QLIMAX
+  color: none
+  live: true
+- time:
+    day: 18
+    month: 11
+    hour: 22
     minute: 0
-  name: Sub Zero Project
+  name: QLIMAX 2017
+  color: none
+  live: true
+- time:
+    day: 19
+    month: 11
+    hour: 7
+    minute: 0
+  name: Nothing
   color: none
   live: true

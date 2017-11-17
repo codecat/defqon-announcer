@@ -206,7 +206,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if m.Content == ".radio" {
-		sendMessage(s, m.ChannelID, "Sadly, there is no official stream for The Return of Headhunterz.")
+		sendMessage(s, m.ChannelID, "**Just join the voice channel on the left!** Or: http://radio.q-dance.nl/")
 	}
 
 	if m.Content == ".schedule" || m.Content == ".timetable" {
@@ -232,7 +232,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	parse := strings.SplitN(m.Content, " ", 2)
-	if parse[0] == ".find" && len(parse) == 2 {
+	/*if parse[0] == ".find" && len(parse) == 2 {
 		found := findItem(parse[1], func(item *ScheduleItem) {
 			if nowSeconds() < item.TimeSeconds() {
 				sendMessage(s, m.ChannelID, fmt.Sprintf("%s is at **%d:%02d** CEST!", formatAnnounceArtist(item), item.Time.Hour, item.Time.Minute))
@@ -244,18 +244,17 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if !found {
 			sendMessage(s, m.ChannelID, "I found nothing :frowning:")
 		}
-	} else if parse[0] == ".notify" && len(parse) == 2 {
+	} else*/
+	if parse[0] == ".notify" && len(parse) == 2 {
 		//TODO: .unnotify
 		found := findItem(parse[1], func(item *ScheduleItem) {
-			if addNotifyUser(item, m.Author.ID) {
-				sendMessage(s, m.ChannelID, fmt.Sprintf("<@%s>, signed up! You will be notified for %s", m.Author.ID, formatAnnounceArtist(item)))
-			} else {
-				sendMessage(s, m.ChannelID, fmt.Sprintf("<@%s>, you already signed up to be notified for %s", m.Author.ID, formatAnnounceArtist(item)))
-			}
+			addNotifyUser(item, m.Author.ID)
 		})
 
 		if !found {
 			sendMessage(s, m.ChannelID, "I found nothing :frowning:")
+		} else {
+			sendMessage(s, m.ChannelID, "OK!")
 		}
 	}
 
